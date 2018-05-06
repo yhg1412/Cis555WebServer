@@ -105,7 +105,7 @@
                         <id>MasterServer</id>
                         <goals><goal>java</goal></goals>
                         <configuration>
-                            <mainClass>edu.upenn.cis455.mapreduce.master.MinimalJettyServer</mainClass>
+                            <mainClass>MiniJettyServer</mainClass>
                         </configuration>
                     </execution>
 
