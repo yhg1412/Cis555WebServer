@@ -1,21 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Bootstrap Example</title>
+    <title>Home</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="../stylesheets/style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- Font Awesome CSS -->
+    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" media="screen">
+
+    <!-- Elegant icons CSS -->
+    <link href="../assets/css/simple-line-icons.css" rel="stylesheet" media="screen">
+
+    <!-- Magnific-popup lightbox -->
+    <link href="../assets/css/magnific-popup.css" rel="stylesheet">
+
+    <!-- Owl Carousel -->
+    <link href="../assets/css/owl.theme.css" rel="stylesheet">
+    <link href="../assets/css/owl.carousel.css" rel="stylesheet">
+
+    <!-- Animate css -->
+    <link href="../assets/css/animate.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body>
-
-<div class="container-fluid">
-    <h1>My First Bootstrap Page</h1>
-    <p>This part is inside a .container-fluid class.</p>
-    <p>The .container-fluid class provides a full width container, spanning the entire width of the viewport.</p>
-</div>
-
+<body class="bg">
+<section >
+	<div class="intro">
+		<h1>Search Engine Name</h1>
+		<h2>UserPlaceHolder</h2>
+		  
+		<div class="input-group" style="margin:auto;width:50%;">
+			<form action="/servlet/submitQuery" method="POST">
+				<input id="input1" type="text" class="form-control" name = "queryName" placeholder="Ask away...">
+				<span class="input-group-btn">
+			    	  <button type="submit" class="btn btn-custom-2" value="Submit">Search</button>
+				  </span>	
+			  </form>
+		 </div>
+	 </div>
+</section>
 </body>
+
 </html>
+
+
+
+
+
+
+
+
 

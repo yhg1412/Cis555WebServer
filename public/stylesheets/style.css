@@ -78,9 +78,9 @@ tr {
 }
 
 .navbar {
-  background: url(../images/hero.jpg);
+  background: url(../image/hero.jpg);
   background-size: cover;
-  background-position: 25% 75%;
+  background-position: 0% 25%;
   margin: auto;
 }
 
@@ -119,6 +119,8 @@ tr {
   line-height: 24px;
 }
 
+
+
 #nav-entry:hover {
   text-decoration: none;
 	color: #999;
@@ -144,15 +146,16 @@ tr {
 
 
 #home {
-	background: url(../images/hero.jpg);
-	background-color: #222;
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-	-webkit-background-size: cover;
-	   -moz-background-size: cover;
-		 -o-background-size: cover;
-			background-size: cover;
-	padding: 0;
+    /* The image used */
+    background-image: url(../image/hero.jpg);
+
+    /* Full height */
+    height: 100%; 
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 #query {
@@ -182,8 +185,9 @@ tr {
 }
 #navbar {
     float: left;
+	width: 50%;
     margin-top: 14px;
-    margin-left: auto;
+    margin-left: 10%;
     display: inline-block;
 }
 
@@ -219,6 +223,19 @@ a:hover {
 	color: #999;
 }
 
+
+.bg {
+    /* The image used */
+    background-image: url(../image/hero.jpg);
+
+    /* Full height */
+    height: 100%; 
+
+    /* Center and scale the image nicely */
+    background-position: auto;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 /* ---------------------------------------------- /*
  * Transition elsements
 /* ---------------------------------------------- */
@@ -272,10 +289,11 @@ h2 {
 	margin: 0 0 30px;
 }
 
-h2:hover {
+/*h2:hover {
 	text-decoration: none;
 	color: #999;
 }
+*/
 
 h3 {
 	font-size: 13px;
@@ -1269,6 +1287,8 @@ button.mfp-close {
 	top: 65%;
 }
 
+
+
 /* ---------------------------------------------- /*
  * Media
 /* ---------------------------------------------- */
@@ -1376,3 +1396,84 @@ line-height: 40px;
 text-align: center;
 font-size: 14px;
 }
+
+#resultlink {
+	color: #1a0dab !important;
+	cursor: pointer;
+	line-height: 1.2;
+	font-size: 18px;
+	font-weight: 400;
+	font-family: arial,sans-serif;
+	height: 50px;
+	width: 70%;
+	text-align: left;
+}
+
+
+.logo {
+      font-family: 'Molle', cursive !important; 
+      font-size: 20px;
+      color: #ffffff;
+      display: inline-block;
+}
+.resultblock {
+  height: 90%;
+  width: 90%;
+  padding-left: 30px;
+}
+.page {
+  height: 10%;
+  width: 100%;
+  margin-left: 35%;
+}
+.pagebutton {
+  font-size: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.resultslot {
+  height: 120px;
+  width: 100%;
+}
+.page {
+	height: 8%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+.renderpage{
+	height: 88%;
+	width: 80%;
+	margin-top:30px;
+	margin-bottom: 10px;
+}
+.resulttitle{
+	color: #1a0dab;
+	height: 30px;
+	font-size:20px;
+	padding-left: 50px;
+	vertical-align: middle;
+}
+.resulturl{
+	font-size: :14px;
+	font-weight: 400
+	font-family: arial,sans-serif;
+	height: 25px;
+	padding-left: 50px;
+	padding-top: 2px;
+	vertical-align: middle;
+	color: #006621 !important;
+}
+.resultdescription{
+	font-size: 13px;
+	font-weight: 400;
+	font-family: arial,sans-serif;
+	height: 50px;
+	width: 70%;
+	padding-left: 50px;
+	color: #545454 !important;
+
+}
+
+

@@ -12,10 +12,11 @@ public class MiniJettyServer  {
         Server server = new Server(8080);
 
         WebAppContext context = new WebAppContext();
+        String path = System.getProperty("user.dir");
 
         context.setDescriptor("conf/web.xml");
         context.setContextPath("/");
-        context.setResourceBase("./public/");
+        context.setResourceBase(path + "/public/");
         context.setParentLoaderPriority(false);
         server.setHandler(context);
 
