@@ -7,6 +7,7 @@ body {
 }
 nav {
     background: #DCDCDC;
+	margin-bottom: 0px;
 }
 
 li {
@@ -78,10 +79,11 @@ tr {
 }
 
 .navbar {
-  background: url(../image/hero.jpg);
+  background: url(../image/hero3.jpg);
   background-size: cover;
   background-position: 0% 25%;
   margin: auto;
+  margin-bottom: 5px;
 }
 
 .hello,
@@ -147,7 +149,7 @@ tr {
 
 #home {
     /* The image used */
-    background-image: url(../image/hero.jpg);
+    background-image: url(../image/hero3.jpg);
 
     /* Full height */
     height: 100%; 
@@ -187,7 +189,7 @@ tr {
     float: left;
 	width: 50%;
     margin-top: 14px;
-    margin-left: 10%;
+    margin-left: 12%;
     display: inline-block;
 }
 
@@ -226,7 +228,7 @@ a:hover {
 
 .bg {
     /* The image used */
-    background-image: url(../image/hero.jpg);
+    background-image: url(../image/hero3.jpg);
 
     /* Full height */
     height: 100%; 
@@ -1398,12 +1400,11 @@ font-size: 14px;
 }
 
 #resultlink {
-	color: #1a0dab !important;
 	cursor: pointer;
 	line-height: 1.2;
-	font-size: 18px;
+	font-size: 20px;
 	font-weight: 400;
-	font-family: arial,sans-serif;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	height: 50px;
 	width: 70%;
 	text-align: left;
@@ -1419,7 +1420,7 @@ font-size: 14px;
 .resultblock {
   height: 90%;
   width: 90%;
-  padding-left: 30px;
+  padding-left: 15%;
 }
 .page {
   height: 10%;
@@ -1452,7 +1453,7 @@ font-size: 14px;
 	color: #1a0dab;
 	height: 30px;
 	font-size:20px;
-	padding-left: 50px;
+	padding-left: 10%;
 	vertical-align: middle;
 }
 .resulturl{
@@ -1460,7 +1461,7 @@ font-size: 14px;
 	font-weight: 400
 	font-family: arial,sans-serif;
 	height: 25px;
-	padding-left: 50px;
+	padding-left: 10%;
 	padding-top: 2px;
 	vertical-align: middle;
 	color: #006621 !important;
@@ -1471,9 +1472,44 @@ font-size: 14px;
 	font-family: arial,sans-serif;
 	height: 50px;
 	width: 70%;
-	padding-left: 50px;
+	padding-left: 10%;
 	color: #545454 !important;
 
 }
+
+#page-bar{
+	margin: 0 auto;
+	width: 300px;
+}
+
+#logout{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+#homesearch{
+	margin: 0 auto;
+	width: 600px;
+}
+
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
+.ui-autocomplete {
+    position: relative;
+}
+
 
 

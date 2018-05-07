@@ -2,9 +2,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.servlet.http.HttpSession;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Scanner;
 
 public class QueryServlet extends HttpServlet {
@@ -14,26 +18,22 @@ public class QueryServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
         //System.out.println("Receive Post" + request.getRequestURI());
-        if(request.getRequestURI().equals("/servlet/submitQuery")){
+        if(request.getRequestURI().equals("/query")){
             String query = request.getParameter("queryName");
             System.out.println("Query is: "+ query);
         }
 
+        HttpSession s = request.getSession();
+        //compute query
+        List<Hashtable<String, String>> queryResults = null;
+
+        //save to session
+        s.setAttribute("queryResults", queryResults);
 
 
-        String path = System.getProperty("user.dir");
-        File f = new File(path + "/public/html/" + "results.html");
-        StringBuilder sb = new StringBuilder();
-        Scanner sc = new Scanner(f);
-        while (sc.hasNext()){
-            sb.append(sc.nextLine() + "\n");
-        }
-        sc.close();
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/html");
-        PrintWriter pw = response.getWriter();
-        pw.println(sb.toString());
-        pw.flush();
+        response.sendRedirect("/result?startIdx=0");
+
+
     }
 
 }

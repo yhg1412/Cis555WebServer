@@ -63,8 +63,7 @@ public class MasterServlet extends HttpServlet{
         //Retrieve logged in user information
         if (session != null) {
             username = (String) session.getAttribute("username");
-            user = db.getUser(username);
-            generateHome(pw, path, user.getUsername());
+            generateHome(pw, path, username);
         } else{
             handleLogin(out, null);
         }
@@ -87,7 +86,7 @@ public class MasterServlet extends HttpServlet{
             return;
         }
 
-        if(uri.equals("/servlet/submitQuery")){
+        if(uri.equals("/query")){
             String query = request.getParameter("queryName");
             System.out.println("Query is: "+ query);
         }
@@ -189,45 +188,52 @@ public class MasterServlet extends HttpServlet{
 
 
     private void handleLogin(PrintWriter out, String msg){
-        out.println("<html>");
-        out.println("<title>Login</title>");
-        out.println("<meta charset="+"utf-8"+">");
-        out.println("<head> *** Author: Peng Yan ID: ype *** </head>");
-        out.println("<body>");
-        out.println("<h3>Please Log In Here:</h3>");
-        if(msg != null){
-            out.println("<h4>"+msg+"</h4>");
+        String path = System.getProperty("user.dir");
+        File f = new File(path + "/public/html/" + "login.html");
+        StringBuilder sb = new StringBuilder();
+        Scanner sc = null;
+        try{
+            sc = new Scanner(f);
+        } catch (FileNotFoundException fe){
+            System.out.println("login.html not found");
+            return;
         }
-        out.println("<form action=\"/home/login\" method=\"post\">");
-        out.println("Username: <input type=\"text\" name=\"username\"/><br/>");
-        out.println("Password: <input type=\"password\" name=\"password\"/><br/>");
-        out.println("<input type=\"submit\" value=\"Login\"/>");
-        out.println("</form>");
-        out.println("<a href=\"/home/register\">" +  "Don't have an account yet? Register here" + "</a><br/>");
-        out.println("</body>");
-        out.println("</html>");
-        out.close();
+
+
+        while (sc.hasNext()){
+            String line = sc.nextLine();
+            if(line.contains("h4") && msg != null){
+                line = line.replace("</h4>", msg+"</h4>");
+            }
+            sb.append(line + "\n");
+        }
+
+        sc.close();
+        out.println(sb.toString());
     }
 
     private void handleRegister(PrintWriter out, String msg){
-        out.println("<html>");
-        out.println("<title>Register</title>");
-        out.println("<meta charset="+"utf-8"+">");
-        out.println("<head> *** Author: Peng Yan ID: ype *** </head>");
-        out.println("<body>");
-        out.println("<h3>Please Register here:</h3>");
-        if(msg != null){
-            out.println("<h4>"+msg+"</h4>");
+        String path = System.getProperty("user.dir");
+        File f = new File(path + "/public/html/" + "register.html");
+        StringBuilder sb = new StringBuilder();
+        Scanner sc = null;
+        try{
+            sc = new Scanner(f);
+        } catch (FileNotFoundException fe){
+            System.out.println("register.html not found");
+            return;
         }
-        out.println("<form action=\"/home/register\" method=\"post\">");
-        out.println("Username: <input type=\"text\" name=\"username\"/><br/>");
-        out.println("Password: <input type=\"password\" name=\"password\"/><br/>");
-        out.println("<input type=\"submit\" value=\"register\"/>");
-        out.println("</form>");
-        out.println("<a href=\"/login\">" +  "Home" + "</a>");
-        out.println("</body>");
-        out.println("</html>");
-        out.close();
+
+        while (sc.hasNext()){
+            String line = sc.nextLine();
+            if(line.contains("h4") && msg != null){
+                line = line.replace("</h4>", msg+"</h4>");
+            }
+            sb.append(line + "\n");
+        }
+
+        sc.close();
+        out.println(sb.toString());
     }
 
     private String checkTime(){
@@ -249,7 +255,7 @@ public class MasterServlet extends HttpServlet{
             return "Good Evening, ";
         }
         else{
-            return "Good Night";
+            return "Good Night, ";
         }
     }
 }
