@@ -15,35 +15,39 @@ public class ResultServlet extends HttpServlet {
         String startIdxStr = request.getParameter("startIdx");
         int startIdx = Integer.parseInt(startIdxStr);
         System.out.println(startIdx);
-
+        MySQLWrapper.getHost("https://www.google.com/a/f/f");
         HttpSession s = request.getSession();
-        Object queryResults = (List<Hashtable<String, String>>)s.getAttribute("queryResults");
-        //System.out.println("test"+ test);
-
-
-
-        String path = System.getProperty("user.dir");
-        File f = new File(path + "/public/html/" + "results.html");
-        StringBuilder sb = new StringBuilder();
-        Scanner sc = new Scanner(f);
-
-        int pageCount = 0;
-        while (sc.hasNext()){
-            String line = sc.nextLine();
-            if(line.contains("page-item")){
-                if(startIdx/10 == pageCount){
-                    line = line.replace("page-item", "page-item disabled");
-                }
-                pageCount++;
-            }
-            sb.append(line + "\n");
-        }
-        sc.close();
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/html");
+        List<UrlResult> results = (List<UrlResult>)s.getAttribute("queryResults");
+//        for(UrlResult urlResult : results){
+//
+//        }
         PrintWriter pw = response.getWriter();
-        pw.println(sb.toString());
+        pw.print(results.toString());
         pw.flush();
+        pw.close();
+        return;
+//        String path = System.getProperty("user.dir");
+//        File f = new File(path + "/public/html/" + "results.html");
+//        StringBuilder sb = new StringBuilder();
+//        Scanner sc = new Scanner(f);
+//
+//        int pageCount = 0;
+//        while (sc.hasNext()){
+//            String line = sc.nextLine();
+//            if(line.contains("page-item")){
+//                if(startIdx/10 == pageCount){
+//                    line = line.replace("page-item", "page-item disabled");
+//                }
+//                pageCount++;
+//            }
+//            sb.append(line + "\n");
+//        }
+//        sc.close();
+//        response.setStatus(HttpServletResponse.SC_OK);
+//        response.setContentType("text/html");
+//
+//        pw.println(sb.toString());
+//        pw.flush();
     }
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
 

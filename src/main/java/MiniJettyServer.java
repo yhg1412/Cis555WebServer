@@ -12,8 +12,11 @@ import java.io.File;
 import java.util.Scanner;
 
 public class MiniJettyServer  {
+    public static MySQLWrapper mysql;
     public static void main(String[] args) throws Exception {
+
         Server server = new Server(8080);
+        mysql = new MySQLWrapper();
 
         WebAppContext context = new WebAppContext();
         String path = System.getProperty("user.dir");

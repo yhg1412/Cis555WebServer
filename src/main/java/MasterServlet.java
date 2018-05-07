@@ -16,6 +16,11 @@ import java.util.Date;
 
 public class MasterServlet extends HttpServlet{
     private DBWrapper db;
+    public MySQLWrapper mysql;
+    public void init(){
+        System.out.println("Servlet Init");
+        mysql = MiniJettyServer.mysql;
+    }
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = System.getProperty("user.dir");
         String dir = getServletContext().getInitParameter("BDBstore");
@@ -89,6 +94,18 @@ public class MasterServlet extends HttpServlet{
         if(uri.equals("/query")){
             String query = request.getParameter("queryName");
             System.out.println("Query is: "+ query);
+            HttpSession session = request.getSession(false);
+            String username=null;
+            String profile = null;
+            if(session==null){
+                System.out.println("Internal Error, Query null session");
+                handleLogin(out, "Internal Error, Query null session");
+                return;
+            }
+            profile = (String)session.getAttribute("profile");
+            List<UrlResult> results = mysql.evaluateQuery(query, profile);
+            session.setAttribute("queryResults",results);
+
         }
         if(uri.endsWith("register")){
             String username = request.getParameter("username");
@@ -104,21 +121,28 @@ public class MasterServlet extends HttpServlet{
                 //db.shutdown();
                 return;
             }
-            if(db.containsUser(username)){
-                handleRegister(out, "Username exists. Please try again.");
-                //db.shutdown();
-                return;
-            }
-            try {
-                db.storeUser(username, password);
+            try{
+                mysql.register(username, password);
                 handleLogin(out, null);
-                //db.shutdown();
-                return;
-            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-                handleRegister(out, "Invlid password format. Please try again.");
-                //db.shutdown();
-                return;
+            } catch (IllegalArgumentException e){
+                System.out.println("Register Failed: " + e.toString());
+                handleRegister(out, "Register Failed in DB: " + e.toString());
             }
+//            if(db.containsUser(username)){
+//                handleRegister(out, "Username exists. Please try again.");
+//                //db.shutdown();
+//                return;
+//            }
+//            try {
+//                db.storeUser(username, password);
+//                handleLogin(out, null);
+//                //db.shutdown();
+//                return;
+//            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+//                handleRegister(out, "Invlid password format. Please try again.");
+//                //db.shutdown();
+//                return;
+//            }
         }
 
         if(uri.endsWith("login")){
@@ -135,34 +159,42 @@ public class MasterServlet extends HttpServlet{
                 //db.shutdown();
                 return;
             }
-            if(!db.containsUser(username)){
-                handleLogin(out, "Username does not exist.");
-                //db.shutdown();
-                return;
-            }
+//            if(!db.containsUser(username)){
+//                handleLogin(out, "Username does not exist.");
+//                //db.shutdown();
+//                return;
+//            }
             try {
-                if(db.checkCombination(username, password) == false){
-                    handleLogin(out, "Combination is incorrect. Please try again.");
-                    //db.shutdown();
-                    return;
-                }
+//                if(db.checkCombination(username, password) == false){
+//                    handleLogin(out, "Combination is incorrect. Please try again.");
+//                    //db.shutdown();
+//                    return;
+//                }
+//
+//                HttpSession session = request.getSession(true);
+//                session.setAttribute("username", username);
+//                User user = db.getUser(username);
+//                try{
+//                    generateHome(out, path, user.getUsername());
+//                }catch (FileNotFoundException fe){
+//                    System.out.println("home.html not found");
+//                }
 
+                //db.shutdown();
+                // TODO: save profile
+                String profile = mysql.login(username, password);
                 HttpSession session = request.getSession(true);
                 session.setAttribute("username", username);
-                User user = db.getUser(username);
-                try{
-                    generateHome(out, path, user.getUsername());
-                }catch (FileNotFoundException fe){
-                    System.out.println("home.html not found");
-                }
-
-                //db.shutdown();
+                session.setAttribute("profile", profile);
+                generateHome(out, path, username);
                 return;
 
-            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-                handleLogin(out, "Internal Server Error. Please try again.");
+            } catch (IllegalArgumentException e) {
+                handleLogin(out, e.toString());
                 //db.shutdown();
                 return;
+            } catch (FileNotFoundException e){
+                System.out.println("Html File Not Found: Internal Error");
             }
 
         }
@@ -184,6 +216,7 @@ public class MasterServlet extends HttpServlet{
         sc.close();
         pw.println(sb.toString());
         pw.flush();
+        pw.close();
     }
 
 
@@ -210,6 +243,7 @@ public class MasterServlet extends HttpServlet{
 
         sc.close();
         out.println(sb.toString());
+        out.close();
     }
 
     private void handleRegister(PrintWriter out, String msg){
@@ -234,6 +268,7 @@ public class MasterServlet extends HttpServlet{
 
         sc.close();
         out.println(sb.toString());
+        out.close();
     }
 
     private String checkTime(){
