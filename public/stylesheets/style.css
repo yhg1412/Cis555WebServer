@@ -1418,8 +1418,8 @@ font-size: 14px;
 }
 .resultblock {
   height: 90%;
-  width: 90%;
-  padding-left: 15%;
+  width: 100%;
+  margin-left: 12%;
 }
 .page {
   height: 10%;
@@ -1434,6 +1434,7 @@ font-size: 14px;
 .resultslot {
   height: 120px;
   width: 100%;
+  margin-left: 10%;
 }
 .page {
 	height: 8%;
@@ -1452,7 +1453,6 @@ font-size: 14px;
 	color: #1a0dab;
 	height: 30px;
 	font-size:20px;
-	padding-left: 10%;
 	vertical-align: middle;
 }
 .resulturl{
@@ -1460,7 +1460,6 @@ font-size: 14px;
 	font-weight: 400
 	font-family: arial,sans-serif;
 	height: 25px;
-	padding-left: 10%;
 	padding-top: 2px;
 	vertical-align: middle;
 	color: #006621 !important;
@@ -1471,7 +1470,6 @@ font-size: 14px;
 	font-family: arial,sans-serif;
 	height: 50px;
 	width: 70%;
-	padding-left: 10%;
 	color: #545454 !important;
 
 }

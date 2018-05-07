@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Hashtable;
@@ -20,6 +21,21 @@ public class QueryServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
         //System.out.println("Receive Post" + request.getRequestURI());
         String query = request.getParameter("queryName");
+
+        if(query == null || query.trim().length()==0){
+            System.out.println("empty query");
+            response.sendRedirect("/home");
+            return;
+        }
+
+        String processed = processStopWords(query);
+
+        if(processed.length() == 0){
+            System.out.println("empty query");
+            response.sendRedirect("/home");
+            return;
+        }
+
         System.out.println("Query is: "+ query);
         HttpSession session = request.getSession();
         String username=null;
@@ -42,4 +58,26 @@ public class QueryServlet extends HttpServlet {
         mysql = MiniJettyServer.mysql;
     }
 
+    private String processStopWords(String query) {
+        int count=0;
+        String[] words = query.split(" ");
+
+        if(!query.toUpperCase().equals(query)){
+            query = query.toLowerCase();
+        }
+
+        String original = new String(query);
+
+        for(String word: words){
+            if(MiniJettyServer.stopWords.contains(word)){
+                query.replace(word, "");
+                count++;
+            }
+        }
+        if(count > query.length()+1){
+            return query;
+        }else{
+            return original;
+        }
+    }
 }
