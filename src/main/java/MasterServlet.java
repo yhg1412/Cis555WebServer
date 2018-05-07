@@ -55,7 +55,13 @@ public class MasterServlet extends HttpServlet{
         }
 
         if (uri.endsWith("logout")) {
-            session = request.getSession(true);
+
+            session = request.getSession(false);
+
+            if(session == null){
+                response.sendRedirect("/home");
+                return;
+            }
             String username = (String)session.getAttribute("username");
             String profile = (String)session.getAttribute("profile");
             mysql.updateProfile(username, profile);

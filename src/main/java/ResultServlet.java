@@ -16,10 +16,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class ResultServlet extends HttpServlet {
+    MySQLWrapper mysql;
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession s = request.getSession(false);
+        if(s == null){
+            response.sendRedirect("/home");
+        }
         String uri = request.getRequestURI().toString();
         if(uri.contains("result/")){
-            HttpSession s = request.getSession(false);
+
             String profile = (String)s.getAttribute("profile");
             String url = uri.substring(8, uri.length());
             if(profile == null){
@@ -32,6 +37,9 @@ public class ResultServlet extends HttpServlet {
             }
             System.out.println("profile"+profile);
             s.setAttribute("profile", profile);
+            String username = (String)s.getAttribute("username");
+            MiniJettyServer.mysql.updateProfile(username, profile);
+
             response.sendRedirect(url);
             return;
         }
@@ -41,7 +49,7 @@ public class ResultServlet extends HttpServlet {
         int startIdx = Integer.parseInt(startIdxStr);
         System.out.println(startIdx);
         MySQLWrapper.getHost("https://www.google.com/a/f/f");
-        HttpSession s = request.getSession();
+
         List<UrlResult> results = (List<UrlResult>)s.getAttribute("queryResults");
         int resultsSize = results.size();
         int maxPage = resultsSize/10 + 1;
@@ -59,35 +67,52 @@ public class ResultServlet extends HttpServlet {
         String url = null;
         while (sc.hasNext()){
             String line = sc.nextLine();
-            if(line.contains("titleholder") && titleCount+startIdx < results.size()){
-                int idx = startIdx + titleCount++;
-                result = results.get(idx);
-                url = result.url;
+            if(line.contains("titleholder")){
+                if(titleCount+startIdx < results.size()){
+                    int idx = startIdx + titleCount++;
+                    result = results.get(idx);
+                    url = result.url;
 //                System.out.println(url);
 //                Document doc = Jsoup.connect(url).get();
 //                String title = doc.title();
 
-                String title = new URL(result.url).getHost();
-                if(title.startsWith("www")){
-                    System.out.println(title);
-                    title = title.split("\\.")[1];
+                    String title = new URL(result.url).getHost();
+                    if(title.startsWith("www")){
+                        System.out.println(title);
+                        title = title.split("\\.")[1];
+                    }else{
+                        title = title.split("\\.")[0];
+                    }
+                    title = title + " :";
+
+                    for(IndexingItem word: result.relatedWord){
+                        title = title + " " + word.word;
+                    }
+                    line = line.replace("titleholder", title);
+                    line = line.replace("\"\"", "/result/"+url);
                 }else{
-                    title = title.split("\\.")[0];
+                    line = line.replace("titleholder", "");
                 }
-                title = title + " :";
-
-                for(IndexingItem word: result.relatedWord){
-                    title = title + " " + word.word;
-                }
-                line = line.replace("titleholder", title);
-                line = line.replace("\"\"", "/result/"+url);
-
             }
-            if(line.contains("urlholder") && titleCount+startIdx < results.size()){
-                line = line.replace("urlholder", url);
+            if(line.contains("urlholder")){
+                if(titleCount+startIdx < results.size()){
+                    line = line.replace("urlholder", url);
+                }else{
+                    line = line.replace("urlholder", "");
+                }
             }
             if(line.contains("disholder") && titleCount+startIdx < results.size()){
-
+                if(titleCount+startIdx < results.size()){
+                    float score = result.score;
+                    float pageRank = result.pageRank;
+                    float neighborScore = result.getNeighborScore();
+                    String debugInfo = "Total Score: " + score + "\t"
+                            + "Page Rank: "+ pageRank + "\t"
+                            + "Neighbor Score: "+ neighborScore;
+                    line = line.replace("disholder", debugInfo);
+                }else {
+                    line = line.replace("disholder", " ");
+                }
             }
             if(line.contains("page-item")){
                 if(startIdx/10 == pageCount || pageCount > maxPage){
@@ -106,5 +131,9 @@ public class ResultServlet extends HttpServlet {
     }
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
+    }
+
+    public void init(){
+        mysql = MiniJettyServer.mysql;
     }
 }

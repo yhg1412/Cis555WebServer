@@ -19,7 +19,7 @@ public class MySQLWrapper implements IndexingSQL{
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
-    public static int TOPK_PERWORD = 1000;
+    public static int TOPK_PERWORD = 2500;
     public static float TF_WEIGHT = 0.14f;
     public static int RESULT_NUMBER = 90;
     public static float WORD_NEIGHBOR_WEIGHT = 1200.0f;
@@ -424,7 +424,7 @@ public class MySQLWrapper implements IndexingSQL{
     public List<IndexingItem> getWordUrlsCache(String word, String word2){
         System.out.println("url paris: " + word + " " + word2);
         try {
-            preparedStatement = connect.prepareStatement("SELECT * from IndexingCache where word = ? ORDER BY score DESC LIMIT "+String.valueOf(500));
+            preparedStatement = connect.prepareStatement("SELECT * from IndexingCache where word = ? ORDER BY score DESC LIMIT "+String.valueOf(600));
             preparedStatement.setString(1, word);
             resultSet = preparedStatement.executeQuery();
             List<IndexingItem> resultList = retrieveIndexingItemCache(resultSet);
@@ -511,7 +511,7 @@ public class MySQLWrapper implements IndexingSQL{
         Set<String> historySet = new HashSet<String>();
         if(profile!=null && profile.length()!=0){
             for(String s : profile.split(",")){
-                historySet.add(s);
+                historySet.add(getHost(s));
             }
         }
         for(UrlResult r : result){
