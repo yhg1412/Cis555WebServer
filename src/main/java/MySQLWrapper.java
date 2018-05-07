@@ -1,4 +1,8 @@
 import javax.xml.stream.FactoryConfigurationError;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -63,7 +67,33 @@ public class MySQLWrapper implements IndexingSQL{
             }
         } catch (SQLException e){}
     }
+
+    public HashMap<String, Float> pageRankMap;
+
+    public void loadPageRank() {
+        try{
+            pageRankMap = new HashMap<String, Float>();
+            BufferedReader br = new BufferedReader(new FileReader("data/PageRank.csv"));
+            while(true){
+                String line = br.readLine();
+                if(line==null)break;
+                String[] parts = line.split(", ");
+                if(parts==null || parts.length!=2)
+                    break;
+                pageRankMap.put(parts[0], Float.valueOf(parts[1]));
+            }
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        System.out.println("PageRank Number: "+pageRankMap.size());
+    }
+
+
+
     public boolean Initialize(){
+        loadPageRank();
             try{
                 if(connect == null){
                     Class.forName("com.mysql.cj.jdbc.Driver");
@@ -224,6 +254,24 @@ public class MySQLWrapper implements IndexingSQL{
         return list;
     }
 
+    private List<IndexingItem> retrieveIndexingItemCache(ResultSet resultSet) throws SQLException {
+        ArrayList<IndexingItem> list = new ArrayList<>();
+        while (resultSet.next()) {
+            // It is possible to get the columns via name
+            // also possible to get the columns via the column number
+            // which starts at 1
+            // e.g. resultSet.getString(2);
+            String word = resultSet.getString(1);
+            String url = resultSet.getString(2);
+            float scoreSum = resultSet.getFloat(3);
+            IndexingItem item = new IndexingItem(word, url, 1,
+                    0, 0, 0, 0,
+                    0, 0, 0, -1, -1, -1, -1, -1, scoreSum);
+            list.add(item);
+        }
+        return list;
+    }
+
     public void close() {
         try {
             if (resultSet != null) {
@@ -357,31 +405,73 @@ public class MySQLWrapper implements IndexingSQL{
 
     }
 
-    public float getPageRank(String url){
-        try{
-            String host = getHost(url);
-            preparedStatement = connect.prepareStatement("SELECT rank from PageRank where url = ?");
-            preparedStatement.setString(1, host);
+    public List<IndexingItem> getWordUrlsCache(String word){
+        try {
+            preparedStatement = connect.prepareStatement("SELECT * from IndexingCache where word = ? ORDER BY score DESC LIMIT "+String.valueOf(TOPK_PERWORD));
+            preparedStatement.setString(1, word);
             resultSet = preparedStatement.executeQuery();
-            if(!resultSet.next()){
-                System.out.println("No Such Host: "+host);
-                return 0.15f;
-            } else {
-                return resultSet.getFloat(1);
-            }
+            List<IndexingItem> resultList = retrieveIndexingItemCache(resultSet);
+            return resultList;
         } catch (SQLException e){
+            System.err.println("Exception in getWordUrls: " + e.toString());
             e.printStackTrace();
-            return 0.15f;
+            return null;
         } finally {
             cleanResult();
         }
     }
 
+    public List<IndexingItem> getWordUrlsCache(String word, String word2){
+        System.out.println("url paris: " + word + " " + word2);
+        try {
+            preparedStatement = connect.prepareStatement("SELECT * from IndexingCache where word = ? ORDER BY score DESC LIMIT "+String.valueOf(500));
+            preparedStatement.setString(1, word);
+            resultSet = preparedStatement.executeQuery();
+            List<IndexingItem> resultList = retrieveIndexingItemCache(resultSet);
+            return resultList;
+        } catch (SQLException e){
+            System.err.println("Exception in getWordUrls: " + e.toString());
+            e.printStackTrace();
+            return null;
+        } finally {
+            cleanResult();
+        }
+
+    }
+
+    public float getPageRank(String url){
+        String host = getHost(url);
+        if(pageRankMap.containsKey(host))
+            return pageRankMap.get(host);
+        else
+            return 0.15f;
+//        try{
+//            String host = getHost(url);
+//            preparedStatement = connect.prepareStatement("SELECT rank from PageRank where url = ?");
+//            preparedStatement.setString(1, host);
+//            resultSet = preparedStatement.executeQuery();
+//            if(!resultSet.next()){
+//                System.out.println("No Such Host: "+host);
+//                return 0.15f;
+//            } else {
+//                return resultSet.getFloat(1);
+//            }
+//        } catch (SQLException e){
+//            e.printStackTrace();
+//            return 0.15f;
+//        } finally {
+//            cleanResult();
+//        }
+    }
+
     public List<UrlResult> evaluateQuery(String query, String profile){
         String[] words = query.split(" ");
         HashMap<String, UrlResult> map = new HashMap<>();
+        System.out.println("T1:" + System.currentTimeMillis());
         for(String word : words){
             List<IndexingItem> listItems = getWordUrls(word);
+            //List<IndexingItem> listItems = getWordUrlsCache(word);
+            System.out.println("T:" + word +" " + System.currentTimeMillis());
             for(IndexingItem item : listItems){
                 String url = item.url;
                 float scoreSum = item.scoreSum;
@@ -395,10 +485,13 @@ public class MySQLWrapper implements IndexingSQL{
                 urlResult.putWord(item);
             }
         }
+        System.out.println("T2:" + System.currentTimeMillis());
         for(int i = 0; i < words.length; i++){
             for(int j = 0; j < words.length; j++){
                 if(i==j)continue;
+                System.out.println("T3:" + i + " " + j + " " + System.currentTimeMillis());
                 List<IndexingItem> listItems = getWordUrls(words[i],words[j]);
+                //List<IndexingItem> listItems = getWordUrlsCache(words[i],words[j]);
                 for(IndexingItem item : listItems){
                     String url = item.url;
                     float scoreSum = item.scoreSum;
@@ -412,6 +505,7 @@ public class MySQLWrapper implements IndexingSQL{
                 }
             }
         }
+        System.out.println("T4:" + System.currentTimeMillis());
         ArrayList<UrlResult> result = new ArrayList<UrlResult>();
         result.addAll(map.values());
         Set<String> historySet = new HashSet<String>();
@@ -427,8 +521,9 @@ public class MySQLWrapper implements IndexingSQL{
             r.score = r.score + r.score * r.neighborScore * WORD_NEIGHBOR_WEIGHT;
             r.score = r.score + r.score * (float)Math.log(2+r.pageRank) * PAGE_RANK_WEIGHT;
         }
+        System.out.println("T5:" + System.currentTimeMillis());
         sort(result);
-
+        System.out.println("T6:" + System.currentTimeMillis());
         return result.subList(0, RESULT_NUMBER < result.size()? RESULT_NUMBER : result.size());
     }
 
@@ -483,7 +578,6 @@ public class MySQLWrapper implements IndexingSQL{
 //        for(UrlResult result : db.evaluateQuery("septa philadelphia transit", null)){
 //            System.out.println(result.toString());
 //        }
-        System.out.println("Hey");
 
         db.close();
     }
