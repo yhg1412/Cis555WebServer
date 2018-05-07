@@ -15,8 +15,8 @@ public class MySQLWrapper implements IndexingSQL{
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
-    public static int TOPK_PERWORD = 1500;
-    public static float TF_WEIGHT = 0.1f;
+    public static int TOPK_PERWORD = 1000;
+    public static float TF_WEIGHT = 0.14f;
     public static int RESULT_NUMBER = 90;
     public static float WORD_NEIGHBOR_WEIGHT = 1200.0f;
     public static float USER_PROFILE_WEIGHT = 1.5f;
@@ -324,7 +324,7 @@ public class MySQLWrapper implements IndexingSQL{
     // --------Following is method for front end tuning
     public List<IndexingItem> getWordUrls(String word){
         try {
-            preparedStatement = connect.prepareStatement("SELECT *, ((LOG(2+tf)*3+headingScore+positionScore+" +String.valueOf(TITLE_IMPORTANCE)+ ")*((2*capitalPercent+2*titlePercent+5*(url like '%"+word+"%') " +
+            preparedStatement = connect.prepareStatement("SELECT *, ((LOG(2+tf)*6+headingScore+5*positionScore+" +String.valueOf(TITLE_IMPORTANCE)+ ")*((2*capitalPercent+2*titlePercent+5*(url like '%"+word+"%') " +
                     "+20*(url like'%"+word+".%')+2*emphasisPercent+2*metaPercent)+" +String.valueOf(TF_WEIGHT)+ ")) as scoreSum from Indexing where word = ? ORDER BY scoreSum DESC LIMIT "+String.valueOf(TOPK_PERWORD));
             preparedStatement.setString(1, word);
             resultSet = preparedStatement.executeQuery();
@@ -340,9 +340,10 @@ public class MySQLWrapper implements IndexingSQL{
     }
 
     public List<IndexingItem> getWordUrls(String word, String word2){
+        System.out.println("url paris: " + word + " " + word2);
         try {
-            preparedStatement = connect.prepareStatement("SELECT *, ((LOG(2+tf)*3+headingScore+positionScore+" +String.valueOf(TITLE_IMPORTANCE)+ ")*((2*capitalPercent+2*titlePercent+5*(url like '%"+word+"%') " +
-                    "+20*(url like '%"+word2+"%') "+"+10*(url like'%"+word+".%')+2*emphasisPercent+2*metaPercent)+" +String.valueOf(TF_WEIGHT)+ ")) as scoreSum from Indexing where word = ? ORDER BY scoreSum DESC LIMIT "+String.valueOf(500));preparedStatement.setString(1, word);
+            preparedStatement = connect.prepareStatement("SELECT *, ((LOG(2+tf)*6+headingScore+5*positionScore+" +String.valueOf(TITLE_IMPORTANCE)+ ")*((2*capitalPercent+2*titlePercent+5*(url like '%"+word+"%') " +
+                    "+20*(url like '%"+word2+"%') "+"+10*(url like'%"+word+".%')+2*emphasisPercent+2*metaPercent)+" +String.valueOf(TF_WEIGHT)+ ")) as scoreSum from Indexing where word = ? ORDER BY scoreSum DESC LIMIT "+String.valueOf(400));preparedStatement.setString(1, word);
             resultSet = preparedStatement.executeQuery();
             List<IndexingItem> resultList = retreiveIndexingItem(resultSet);
             return resultList;
@@ -395,7 +396,8 @@ public class MySQLWrapper implements IndexingSQL{
             }
         }
         for(int i = 0; i < words.length; i++){
-            for(int j = i+1; j < words.length; j++){
+            for(int j = 0; j < words.length; j++){
+                if(i==j)continue;
                 List<IndexingItem> listItems = getWordUrls(words[i],words[j]);
                 for(IndexingItem item : listItems){
                     String url = item.url;
